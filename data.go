@@ -1,0 +1,5 @@
+package monit
+
+func collect() {
+
+}

@@ -1,6 +1,9 @@
 package monit
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
 const (
 	// Normal status
@@ -24,4 +27,10 @@ type Task interface {
 
 func Start() {
 	fmt.Println("monitor!")
+}
+
+func dealWithError(taskName string, err error) {
+	if err != nil {
+		log.Fatalf("%sTask failed: %v", taskName, err.Error())
+	}
 }

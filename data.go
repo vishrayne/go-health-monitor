@@ -1,5 +1,0 @@
-package monit
-
-func collect() {
-
-}

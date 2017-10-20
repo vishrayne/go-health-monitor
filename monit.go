@@ -25,8 +25,13 @@ type Task interface {
 	handleError(err error)
 }
 
+//Start the function
 func Start() {
 	fmt.Println("monitor!")
+	cpuDetails := newCPU()
+	cpuDetails.collectData()
+
+	fmt.Println(cpuDetails)
 }
 
 func dealWithError(taskName string, err error) {

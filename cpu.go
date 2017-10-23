@@ -31,7 +31,7 @@ func (cpu *cpu) toJSON() string {
 	return asJSON(cpu)
 }
 
-func (cpu *cpu) collectData() {
+func (cpu *cpu) collect() {
 	cpu.fetchCPUCount()
 	cpu.fetchCPUUtilization()
 	cpu.fetchAverageLoad()

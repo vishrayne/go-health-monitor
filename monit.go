@@ -29,10 +29,13 @@ type Task interface {
 func Start() {
 	fmt.Println("monitor!")
 	cpuDetails := newCPU()
-	cpuDetails.collectData()
+	cpuDetails.collect()
 
 	fmt.Println(cpuDetails.toJSON())
 
+	memDetails := newMemory()
+	memDetails.collect()
+	fmt.Println(memDetails.toJSON())
 }
 
 func dealWithError(taskName string, err error) {

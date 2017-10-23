@@ -1,6 +1,7 @@
 package monit
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 )
@@ -31,4 +32,10 @@ func asFloat(data string) float64 {
 	}
 
 	return floatVal
+}
+
+func asJSON(data interface{}) string {
+	json, err := json.MarshalIndent(data, "", "  ")
+	dealWithError("json", err)
+	return string(json)
 }

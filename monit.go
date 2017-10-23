@@ -31,7 +31,8 @@ func Start() {
 	cpuDetails := newCPU()
 	cpuDetails.collectData()
 
-	fmt.Println(cpuDetails)
+	fmt.Println(cpuDetails.toJSON())
+
 }
 
 func dealWithError(taskName string, err error) {

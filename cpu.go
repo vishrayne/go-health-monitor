@@ -1,54 +1,63 @@
 package monit
 
 import (
+	"log"
 	"strings"
 
 	sh "github.com/codeskyblue/go-sh"
 )
 
+const (
+	//SafeLoadPercent is the maximum allowed value for average load
+	SafeLoadPercent = 0.7
+)
+
 type cpu struct {
-	Count       int     `json:"cpus"`
-	Utilization string  `json:"utilization"`
-	Load1       float64 `json:"load1"`
-	Load5       float64 `json:"load5"`
-	Load15      float64 `json:"load15"`
+	Count           int     `json:"cpus"`
+	Utilization     string  `json:"utilization"`
+	Load1           float64 `json:"load1"`
+	Load5           float64 `json:"load5"`
+	Load15          float64 `json:"load15"`
+	MaxAllowedLoad  float64 `json:"max_allowed_load"`
+	Status          string  `json:"status"`
+	isLoadAvailable bool
 }
 
 func newCPU() *cpu {
 	return &cpu{}
 }
 
-func (cpu *cpu) collectData() {
-	cpu.Count = cpuCount()
-	cpu.Utilization = cpuUtilization()
-
-	avgLoad := averageLoad()
-	cpu.Load1 = avgLoad["load1"]
-	cpu.Load5 = avgLoad["load5"]
-	cpu.Load15 = avgLoad["load15"]
+func (cpu *cpu) toJSON() string {
+	return asJSON(cpu)
 }
 
-func cpuCount() int {
+func (cpu *cpu) collectData() {
+	cpu.fetchCPUCount()
+	cpu.fetchCPUUtilization()
+	cpu.fetchAverageLoad()
+	cpu.checkStatus()
+}
+
+func (cpu *cpu) fetchCPUCount() {
 	cpus, err := sh.Command("lscpu").Command("grep", "-e", "^CPU(s):").Command("cut", "-f2", "-d:").Command("awk", "{print $1}").Output()
 	if err != nil {
-		return -1
+		cpu.Count = -1
+	} else {
+		cpu.Count = asInteger(cpus)
 	}
-
-	return asInteger(cpus)
 }
 
-func cpuUtilization() string {
+func (cpu *cpu) fetchCPUUtilization() {
 	utilization, err := sh.Command("top", "-bn 2", "-d 0.01").Command("grep", "%Cpu").Command("tail", "-n 1").Command("awk", "{print $2+$4+$6}").Output()
 	if err != nil {
-		return "N.A"
+		cpu.Utilization = "N.A"
+	} else {
+		cpu.Utilization = asString(utilization)
 	}
-
-	return asString(utilization)
 }
 
-func averageLoad() map[string]float64 {
+func (cpu *cpu) fetchAverageLoad() {
 	load, err := sh.Command("uptime").Command("awk", "-F", "load average:", "{print $2}").Output()
-	loadMap := make(map[string]float64, 3)
 	var loadArray []string
 
 	if err != nil {
@@ -60,9 +69,30 @@ func averageLoad() map[string]float64 {
 		}
 	}
 
-	loadMap["load1"] = asFloat(loadArray[0])
-	loadMap["load5"] = asFloat(loadArray[1])
-	loadMap["load15"] = asFloat(loadArray[2])
+	cpu.Load1 = asFloat(loadArray[0])
+	cpu.Load5 = asFloat(loadArray[1])
+	cpu.Load15 = asFloat(loadArray[2])
+	cpu.isLoadAvailable = true
+}
 
-	return loadMap
+func (cpu *cpu) checkStatus() {
+	if !cpu.isLoadAvailable {
+		log.Println("Avg. load is not available. Fetching...")
+		cpu.fetchAverageLoad()
+	}
+
+	healthyLimit := SafeLoadPercent * float64(cpu.Count)
+	cpu.MaxAllowedLoad = healthyLimit
+
+	switch {
+	case cpu.Load15 >= healthyLimit:
+		cpu.Status = Fatal
+	case cpu.Load5 >= healthyLimit:
+		cpu.Status = Caution
+	case cpu.Load1 >= healthyLimit:
+		cpu.Status = Warning
+	default:
+		cpu.Status = Normal
+	}
+
 }

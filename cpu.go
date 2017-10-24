@@ -48,7 +48,7 @@ func (cpu *cpu) fetchCPUCount() {
 }
 
 func (cpu *cpu) fetchCPUUtilization() {
-	utilization, err := sh.Command("top", "-bn 2", "-d 0.01").Command("grep", "%Cpu").Command("tail", "-n 1").Command("awk", "{print $2+$4+$6}").Output()
+	utilization, err := sh.Command("top", "-bn 2", "-d 0.01").Command("grep", "Cpu(s)").Command("tail", "-n 1").Command("awk", "{print $2+$4+$6}").Output()
 	if err != nil {
 		cpu.Utilization = "N.A"
 	} else {

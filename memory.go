@@ -29,6 +29,7 @@ func (m *memory) toJSON() string {
 
 func (m *memory) collect() {
 	m.fetchUsage()
+	m.checkStatus()
 }
 
 func (m *memory) fetchUsage() {
@@ -68,4 +69,20 @@ func (m *memory) memStatsToMap(stats string) map[string]uint64 {
 	}
 
 	return statMap
+}
+
+func (m *memory) checkStatus() {
+	m.Status = Normal
+
+	if m.usedPercentInt > 80 {
+		m.Status = Warning
+
+		if m.usedPercentInt > 95 {
+			m.Status = Caution
+		}
+	}
+
+	if m.freeInt == 0 {
+		m.Status = Fatal
+	}
 }

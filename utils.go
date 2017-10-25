@@ -61,6 +61,10 @@ func parseFloat(data string, err error) float64 {
 	return asFloat(data)
 }
 
+// ==================
+// generic converters
+// ==================
+
 func asInteger(data []byte) int {
 	i, err := strconv.Atoi(asString(data))
 	if err != nil {

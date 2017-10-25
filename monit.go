@@ -1,7 +1,6 @@
 package monit
 
 import (
-	"fmt"
 	"log"
 )
 
@@ -16,23 +15,25 @@ const (
 	Fatal = "Fatal"
 )
 
-//Start the function
-func Start() {
+//CreateReport will create a new monit report
+func CreateReport() {
+	report := CreateSystemReport("monit")
+
 	cpuDetails := newCPU()
 	cpuDetails.collect()
-	fmt.Println(cpuDetails.toJSON())
+	report.writeSection("CPU", cpuDetails.toJSON())
 
 	memDetails := newMemory()
 	memDetails.collect()
-	fmt.Println(memDetails.toJSON())
+	report.writeSection("Memory", memDetails.toJSON())
 
 	diskDetails := newDisk()
 	diskDetails.collect()
-	fmt.Println(diskDetails.toJSON())
+	report.writeSection("Disk", diskDetails.toJSON())
 
 	hostDetails := newHost()
 	hostDetails.collect()
-	fmt.Println(hostDetails.toJSON())
+	report.writeSection("Host Information", hostDetails.toJSON())
 }
 
 func dealWithError(taskName string, err error) {

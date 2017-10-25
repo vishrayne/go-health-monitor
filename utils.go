@@ -8,6 +8,8 @@ import (
 )
 
 const (
+	// Underline constant
+	Underline = "\n================================\n"
 	// NotAvailable constant
 	NotAvailable = "N.A"
 	// Byte size
@@ -25,6 +27,7 @@ const (
 // ==================
 // byte converters
 // ==================
+
 func parseString(data []byte, err error) string {
 	if err != nil {
 		return NotAvailable

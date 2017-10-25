@@ -46,7 +46,7 @@ func CreateSystemReport(name string) *Report {
 func createReport(name string, category int) *Report {
 	now := time.Now()
 	filename := fmt.Sprintf("%s_%s.txt", name, timeStamp(now))
-	header := fmt.Sprintf("filename: %s\ncreated: %v", filename, now)
+	header := fmt.Sprintf("filename: %s\ncreated: %v\n", filename, now)
 
 	var filePath string
 	switch category {
@@ -59,7 +59,7 @@ func createReport(name string, category int) *Report {
 		}
 
 		filePath = fmt.Sprintf("%s/%s", ReportFolderName, filename)
-		header = fmt.Sprintf(reportFormatFor(ReportCategoryFinal), "info", header)
+		header = fmt.Sprintf(reportFormatFor(ReportCategoryFinal), "[info]", header)
 	default:
 		dealWithError("create report", errors.New("invalid value for report category"))
 	}

@@ -34,6 +34,8 @@ func CreateReport() {
 	hostDetails := newHost()
 	hostDetails.collect()
 	report.writeSection("Host Information", hostDetails.toJSON())
+
+	report.close()
 }
 
 func dealWithError(taskName string, err error) {

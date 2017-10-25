@@ -16,26 +16,21 @@ const (
 	Fatal = "Fatal"
 )
 
-/*Task is the parent class for all the monitor tasks*/
-type Task interface {
-	name() string
-	run()
-	toJSON() string
-	toString() string
-	handleError(err error)
-}
-
 //Start the function
 func Start() {
 	fmt.Println("monitor!")
+
 	cpuDetails := newCPU()
 	cpuDetails.collect()
-
 	fmt.Println(cpuDetails.toJSON())
 
 	memDetails := newMemory()
 	memDetails.collect()
 	fmt.Println(memDetails.toJSON())
+
+	diskDetails := newDisk()
+	diskDetails.collect()
+	fmt.Println(diskDetails.toJSON())
 }
 
 func dealWithError(taskName string, err error) {

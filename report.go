@@ -3,7 +3,6 @@ package monit
 import (
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -93,7 +92,6 @@ func (report *Report) writeSection(title string, text string) {
 }
 
 func (report *Report) close() {
-	log.Println("report closed!")
 	report.file.Close()
 }
 

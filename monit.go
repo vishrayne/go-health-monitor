@@ -35,6 +35,10 @@ func CreateReport() {
 	hostDetails.collect()
 	report.writeSection("Host Information", hostDetails.toJSON())
 
+	accessLogParser := newAccessLogParser()
+	accessLogParser.parse(100, "asset/Access-log-250917.txt", false)
+	report.writeSection("Access log", accessLogParser.toJSON())
+
 	report.close()
 }
 

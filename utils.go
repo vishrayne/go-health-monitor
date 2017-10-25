@@ -8,6 +8,8 @@ import (
 )
 
 const (
+	// NotAvailable constant
+	NotAvailable = "N.A"
 	// Byte size
 	Byte = 1.0
 	// KiloByte size
@@ -19,6 +21,45 @@ const (
 	// TeraByte size
 	TeraByte = 1024 * GigaByte
 )
+
+// ==================
+// byte converters
+// ==================
+func parseString(data []byte, err error) string {
+	if err != nil {
+		return NotAvailable
+	}
+
+	return asString(data)
+}
+
+func parseInt(data []byte, err error) int {
+	if err != nil {
+		return -1
+	}
+
+	return asInteger(data)
+}
+
+// ==================
+// string converters
+// ==================
+
+func parseInt64(data string, err error) uint64 {
+	if err != nil {
+		return 0
+	}
+
+	return asUInt64(data)
+}
+
+func parseFloat(data string, err error) float64 {
+	if err != nil {
+		return -1
+	}
+
+	return asFloat(data)
+}
 
 func asInteger(data []byte) int {
 	i, err := strconv.Atoi(asString(data))
@@ -57,11 +98,19 @@ func asFloat(data string) float64 {
 	return floatVal
 }
 
+// ==================
+// json converter
+// ==================
+
 func asJSON(data interface{}) string {
 	json, err := json.MarshalIndent(data, "", "  ")
 	dealWithError("json", err)
 	return string(json)
 }
+
+// ==================
+// size converter
+// ==================
 
 func asHumanBytes(bytes uint64) string {
 	unit := ""

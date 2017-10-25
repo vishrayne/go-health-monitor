@@ -32,11 +32,11 @@ func (d *disk) fetchUsage() {
 	// df -h --total | tail -1 | awk '{printf "total:%s used:%s free:%s used_percent:%s", $2, $3, $4, $5}'
 	disk, err := sh.Command("df", "-h", "--total").Command("tail", "-1").Command("awk", "{printf \"total:%s used:%s free:%s used_percent:%s\", $2, $3, $4, $5}").Output()
 	if err != nil {
-		d.Total = "NA"
-		d.Used = "NA"
-		d.Free = "NA"
-		d.UsedPercent = "NA"
-		d.Status = "NA"
+		d.Total = NotAvailable
+		d.Used = NotAvailable
+		d.Free = NotAvailable
+		d.UsedPercent = NotAvailable
+		d.Status = NotAvailable
 		return
 	}
 
@@ -74,7 +74,7 @@ func (d *disk) checkStatus() {
 	case d.usedPercentInt > 50:
 		d.Status = Warning
 	case d.usedPercentInt <= 0:
-		d.Status = "N.A"
+		d.Status = NotAvailable
 	default:
 		d.Status = Normal
 	}

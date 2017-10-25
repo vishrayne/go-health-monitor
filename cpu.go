@@ -39,21 +39,11 @@ func (cpu *cpu) collect() {
 }
 
 func (cpu *cpu) fetchCPUCount() {
-	cpus, err := sh.Command("lscpu").Command("grep", "-e", "^CPU(s):").Command("cut", "-f2", "-d:").Command("awk", "{print $1}").Output()
-	if err != nil {
-		cpu.Count = -1
-	} else {
-		cpu.Count = asInteger(cpus)
-	}
+	cpu.Count = parseInt(sh.Command("lscpu").Command("grep", "-e", "^CPU(s):").Command("cut", "-f2", "-d:").Command("awk", "{print $1}").Output())
 }
 
 func (cpu *cpu) fetchCPUUtilization() {
-	utilization, err := sh.Command("top", "-bn 2", "-d 0.01").Command("grep", "Cpu(s)").Command("tail", "-n 1").Command("awk", "{print $2+$4+$6}").Output()
-	if err != nil {
-		cpu.Utilization = "N.A"
-	} else {
-		cpu.Utilization = asString(utilization)
-	}
+	cpu.Utilization = parseString(sh.Command("top", "-bn 2", "-d 0.01").Command("grep", "Cpu(s)").Command("tail", "-n 1").Command("awk", "{print $2+$4+$6}").Output())
 }
 
 func (cpu *cpu) fetchAverageLoad() {

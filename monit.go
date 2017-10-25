@@ -31,6 +31,10 @@ func Start() {
 	diskDetails := newDisk()
 	diskDetails.collect()
 	fmt.Println(diskDetails.toJSON())
+
+	hostDetails := newHost()
+	hostDetails.collect()
+	fmt.Println(hostDetails.toJSON())
 }
 
 func dealWithError(taskName string, err error) {

@@ -18,8 +18,6 @@ const (
 
 //Start the function
 func Start() {
-	fmt.Println("monitor!")
-
 	cpuDetails := newCPU()
 	cpuDetails.collect()
 	fmt.Println(cpuDetails.toJSON())

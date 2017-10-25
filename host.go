@@ -15,6 +15,7 @@ type host struct {
 	Platform      string   `json:"platform"`
 	LoggedInUsers []string `json:"logged_in_users"`
 	LastReboot    string   `json:"last_reboot"`
+	User          string   `json:"current_user"`
 }
 
 func newHost() *host {
@@ -32,11 +33,12 @@ func (h *host) collect() {
 }
 
 func (h *host) fetchSystemInfo() {
-	h.Kernal = parseString(sh.Command("uname", "-r").Output())
 	h.OS = runtime.GOOS
+	h.Kernal = parseString(sh.Command("uname", "-r").Output())
 	h.HostName = parseString(sh.Command("hostname").Output())
 	h.Platform = parseString(sh.Command("lsb_release", "-d").Command("awk", "-F", "Description:", "{print $2}").Output())
 	h.LastReboot = parseString(sh.Command("who", "-b").Command("awk", "{print $3,$4}").Output())
+	h.User = parseString(sh.Command("whoami").Output())
 }
 
 func (h *host) fetchUptime() {

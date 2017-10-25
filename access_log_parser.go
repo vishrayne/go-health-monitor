@@ -17,7 +17,8 @@ const (
 	//AllowedLogEntries constant
 	AllowedLogEntries = 200
 	//DefaultRegex used for parsing apache access
-	DefaultRegex   = `(?P<remote_addr>[^ ]*) - - \[(?P<time_local>[^]]*)\] TIME: (?P<time>[^ ]*) "(?P<request>[^\\]*)" (?P<status>[^ ]*) (?P<size>[^ ]*)`
+	DefaultRegex = `(?P<remote_addr>[^ ]*) - - \[(?P<time_local>[^]]*)\] TIME: (?P<time>[^ ]*) "(?P<request>[^\\]*)" (?P<status>[^ ]*) (?P<size>[^ ]*)`
+	//DateTimeLayout used to parse date
 	DateTimeLayout = `02/Jan/2006:15:04:05 -0700`
 )
 

@@ -23,6 +23,10 @@ func (d *disk) toJSON() string {
 	return asJSON(d)
 }
 
+func (d *disk) toPrettyJSON() string {
+	return asPrettyJSON(d)
+}
+
 func (d *disk) collect() {
 	d.fetchUsage()
 	d.checkStatus()

@@ -57,6 +57,10 @@ func (al *accessLog) toJSON() string {
 	return asJSON(al)
 }
 
+func (al *accessLog) toPrettyJSON() string {
+	return asPrettyJSON(al)
+}
+
 func (al *accessLog) parse(lineCount int, filepath string, includeEntries bool) {
 	if lineCount > AllowedLogEntries {
 		dealWithError("access log parser", fmt.Errorf("parsing more than %d lines is not supported, please reduce the configuration value for `line_count` to %d or less", AllowedLogEntries, AllowedLogEntries))

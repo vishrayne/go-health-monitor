@@ -31,6 +31,10 @@ func (cpu *cpu) toJSON() string {
 	return asJSON(cpu)
 }
 
+func (cpu *cpu) toPrettyJSON() string {
+	return asPrettyJSON(cpu)
+}
+
 func (cpu *cpu) collect() {
 	cpu.fetchCPUCount()
 	cpu.fetchCPUUtilization()

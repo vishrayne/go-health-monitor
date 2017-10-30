@@ -26,6 +26,10 @@ func (h *host) toJSON() string {
 	return asJSON(h)
 }
 
+func (h *host) toPrettyJSON() string {
+	return asPrettyJSON(h)
+}
+
 func (h *host) collect() {
 	h.fetchSystemInfo()
 	h.fetchLoggedInUsers()

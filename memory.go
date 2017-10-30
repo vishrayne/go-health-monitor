@@ -27,6 +27,10 @@ func (m *memory) toJSON() string {
 	return asJSON(m)
 }
 
+func (m *memory) toPrettyJSON() string {
+	return asPrettyJSON(m)
+}
+
 func (m *memory) collect() {
 	m.fetchUsage()
 	m.checkStatus()

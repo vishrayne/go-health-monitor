@@ -29,11 +29,11 @@ func CreateReport() {
 	defer report.close()
 
 	systemSummary := allStats()
-	report.writeSection("CPU", systemSummary.CPU.toJSON())
-	report.writeSection("Memory", systemSummary.Memory.toJSON())
-	report.writeSection("Disk", systemSummary.Disk.toJSON())
-	report.writeSection("Host Information", systemSummary.Host.toJSON())
-	report.writeSection("Access log", systemSummary.AccessLogSummary.toJSON())
+	report.writeSection("CPU", systemSummary.CPU.toPrettyJSON())
+	report.writeSection("Memory", systemSummary.Memory.toPrettyJSON())
+	report.writeSection("Disk", systemSummary.Disk.toPrettyJSON())
+	report.writeSection("Host Information", systemSummary.Host.toPrettyJSON())
+	report.writeSection("Access log", systemSummary.AccessLogSummary.toPrettyJSON())
 }
 
 // AllStats collects everything to JSON

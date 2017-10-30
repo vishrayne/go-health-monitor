@@ -109,10 +109,26 @@ func asFloat(data string) float64 {
 // json converter
 // ==================
 
-func asJSON(data interface{}) string {
-	json, err := json.MarshalIndent(data, "", "  ")
+func asPrettyJSON(data interface{}) string {
+	jsonD, err := json.MarshalIndent(data, "", "  ")
 	dealWithError("json", err)
-	return string(json)
+	return string(jsonD)
+}
+
+func asJSON(data interface{}) string {
+	jsonD, err := json.Marshal(data)
+	dealWithError("json", err)
+
+	fmt.Println(string(jsonD))
+	fmt.Println("====")
+
+	rawJSON := json.RawMessage(jsonD)
+	bytes, err := rawJSON.MarshalJSON()
+	dealWithError("json", err)
+
+	fmt.Println(string(bytes))
+
+	return string(bytes)
 }
 
 // ==================

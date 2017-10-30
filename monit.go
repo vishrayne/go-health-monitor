@@ -15,51 +15,95 @@ const (
 	Fatal = "Fatal"
 )
 
+type stats struct {
+	CPU              *cpu       `json:"cpu"`
+	Memory           *memory    `json:"memory"`
+	Disk             *disk      `json:"disk"`
+	Host             *host      `json:"host"`
+	AccessLogSummary *accessLog `json:"accessLog"`
+}
+
 //CreateReport will create a new monit report
 func CreateReport() {
 	report := CreateSystemReport("monit")
 	defer report.close()
 
-	report.writeSection("CPU", CPUStat())
-	report.writeSection("Memory", MemoryStat())
-	report.writeSection("Disk", DiskStat())
-	report.writeSection("Host Information", HostStat())
-	report.writeSection("Access log", AccessLogSummary())
+	systemSummary := allStats()
+	report.writeSection("CPU", systemSummary.CPU.toJSON())
+	report.writeSection("Memory", systemSummary.Memory.toJSON())
+	report.writeSection("Disk", systemSummary.Disk.toJSON())
+	report.writeSection("Host Information", systemSummary.Host.toJSON())
+	report.writeSection("Access log", systemSummary.AccessLogSummary.toJSON())
+}
+
+// AllStats collects everything to JSON
+func AllStats() string {
+	return asJSON(allStats())
+}
+
+func allStats() *stats {
+	allStats := new(stats)
+	allStats.CPU = cpuStat()
+	allStats.Memory = memoryStat()
+	allStats.Disk = diskStat()
+	allStats.Host = hostStat()
+	allStats.AccessLogSummary = accessLogSummary()
+	return allStats
 }
 
 // CPUStat collects and returns cpu status as JSON
 func CPUStat() string {
+	return cpuStat().toJSON()
+}
+
+func cpuStat() *cpu {
 	cpuDetails := newCPU()
 	cpuDetails.collect()
-	return cpuDetails.toJSON()
+	return cpuDetails
 }
 
 // MemoryStat collects and returns memory status as JSON
 func MemoryStat() string {
+	return memoryStat().toJSON()
+}
+
+func memoryStat() *memory {
 	memDetails := newMemory()
 	memDetails.collect()
-	return memDetails.toJSON()
+	return memDetails
 }
 
 // DiskStat collects and returns disk status as JSON
 func DiskStat() string {
+	return diskStat().toJSON()
+}
+
+func diskStat() *disk {
 	diskDetails := newDisk()
 	diskDetails.collect()
-	return diskDetails.toJSON()
+	return diskDetails
 }
 
 // HostStat collects and returns host details as JSON
 func HostStat() string {
+	return hostStat().toJSON()
+}
+
+func hostStat() *host {
 	hostDetails := newHost()
 	hostDetails.collect()
-	return hostDetails.toJSON()
+	return hostDetails
 }
 
 // AccessLogSummary summarizes the access log as JSON
 func AccessLogSummary() string {
+	return accessLogSummary().toJSON()
+}
+
+func accessLogSummary() *accessLog {
 	accessLogParser := newAccessLogParser()
 	accessLogParser.parse(100, "asset/Access-log-250917.txt", false)
-	return accessLogParser.toJSON()
+	return accessLogParser
 }
 
 func dealWithError(taskName string, err error) {

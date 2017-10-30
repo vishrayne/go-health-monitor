@@ -1,4 +1,4 @@
-# go-system-monit
+# go-monit
 
 A simple health checking utility written in golang using. Run the monit script under cmd/monit
 

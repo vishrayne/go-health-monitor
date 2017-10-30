@@ -1,8 +1,8 @@
 # go-monit
 
-A simple health checking utility written in golang. Run the monit script under **_cmd/monit_**.
+A simple health checking utility written in golang. Run the monit script under **cmd/monit**.
 
-A minimal JSON API is also available at **_cmd/monit-server_**, which is written in [gin](https://github.com/gin-gonic/gin) framework.
+A minimal JSON API is also available at **cmd/monit-server**, which is written in [gin](https://github.com/gin-gonic/gin) framework.
 
 [Dep](https://github.com/golang/dep) is used for dependancy management.
 

@@ -38,6 +38,12 @@
   version = "v0.0.3"
 
 [[projects]]
+  name = "github.com/pelletier/go-toml"
+  packages = ["."]
+  revision = "16398bac157da96aa88f98a2df640c7f32af1da2"
+  version = "v1.0.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/ugorji/go"
   packages = ["codec"]
@@ -64,6 +70,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "6bd1a26caf454304793f0c38d5ebd53de51957f00e65d4386ecb1271d389d867"
+  inputs-digest = "b085a43934d2fabc78ce0ef7eb665455f1fc90b507dd61bdf84d4f9317bcd1e4"
   solver-name = "gps-cdcl"
   solver-version = 1

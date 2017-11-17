@@ -7,9 +7,14 @@ import (
 	monit "github.com/vishrayne/go-monit"
 )
 
+const monitStatus string = "monit_stats"
+
 func main() {
+
 	// gin.SetMode(gin.ReleaseMode)
 	engine := gin.Default()
+	engine.Use(monitMiddleware())
+
 	engine.GET("/", rootHandler)
 	engine.GET("/ping", pingHandler)
 	engine.GET("/summary", reportHandler)
@@ -22,6 +27,16 @@ func main() {
 	engine.Run(":8080")
 }
 
+func monitMiddleware() gin.HandlerFunc {
+	// one-time initialization
+	stats := monit.Init()
+
+	return func(c *gin.Context) {
+		c.Set(monitStatus, stats)
+		c.Next()
+	}
+}
+
 func rootHandler(c *gin.Context) {
 	pingHandler(c)
 }
@@ -31,25 +46,31 @@ func pingHandler(c *gin.Context) {
 }
 
 func reportHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, monit.AllStats())
+	stats := c.MustGet(monitStatus).(*monit.Stats)
+	c.JSON(http.StatusOK, stats.AllStats())
 }
 
 func cpuHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, monit.CPUStat())
+	stats := c.MustGet(monitStatus).(*monit.Stats)
+	c.JSON(http.StatusOK, stats.CPUStat())
 }
 
 func memoryHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, monit.MemoryStat())
+	stats := c.MustGet(monitStatus).(*monit.Stats)
+	c.JSON(http.StatusOK, stats.MemoryStat())
 }
 
 func diskHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, monit.DiskStat())
+	stats := c.MustGet(monitStatus).(*monit.Stats)
+	c.JSON(http.StatusOK, stats.DiskStat())
 }
 
 func hostHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, monit.HostStat())
+	stats := c.MustGet(monitStatus).(*monit.Stats)
+	c.JSON(http.StatusOK, stats.HostStat())
 }
 
 func accessLogHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, monit.AccessLogSummary())
+	stats := c.MustGet(monitStatus).(*monit.Stats)
+	c.JSON(http.StatusOK, stats.AccessLogSummary())
 }

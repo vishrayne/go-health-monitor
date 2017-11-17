@@ -3,5 +3,6 @@ package main
 import monit "github.com/vishrayne/go-monit"
 
 func main() {
-	monit.CreateReport()
+	stats := monit.Init()
+	stats.CreateReport()
 }

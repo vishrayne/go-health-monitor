@@ -1,0 +1,7 @@
+[general]
+  ping = 'pong'
+  debug = false
+[access]
+  file_name = 'asset/Access-log-250917.txt'
+  line_count = 100
+  show_log_entries = false

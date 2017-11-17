@@ -2,6 +2,9 @@ package monit
 
 import (
 	"log"
+	"path/filepath"
+
+	toml "github.com/pelletier/go-toml"
 )
 
 const (
@@ -15,94 +18,108 @@ const (
 	Fatal = "Fatal"
 )
 
-type stats struct {
-	CPU              *cpu       `json:"cpu"`
-	Memory           *memory    `json:"memory"`
-	Disk             *disk      `json:"disk"`
-	Host             *host      `json:"host"`
-	AccessLogSummary *accessLog `json:"accessLog"`
+//Stats representation
+type Stats struct {
+	CPU       *cpu       `json:"cpu"`
+	Memory    *memory    `json:"memory"`
+	Disk      *disk      `json:"disk"`
+	Host      *host      `json:"host"`
+	AccessLog *accessLog `json:"accessLog"`
+	config    *toml.Tree
+}
+
+//Init does all the pre-requisites
+func Init() *Stats {
+	allStats := new(Stats)
+	allStats.config = readConfigurations()
+	return allStats
 }
 
 //CreateReport will create a new monit report
-func CreateReport() {
+func (stats *Stats) CreateReport() {
 	report := CreateSystemReport("monit")
 	defer report.close()
 
-	systemSummary := allStats()
+	systemSummary := allStats(stats)
 	report.writeSection("CPU", systemSummary.CPU.toPrettyJSON())
 	report.writeSection("Memory", systemSummary.Memory.toPrettyJSON())
 	report.writeSection("Disk", systemSummary.Disk.toPrettyJSON())
 	report.writeSection("Host Information", systemSummary.Host.toPrettyJSON())
-	report.writeSection("Access log", systemSummary.AccessLogSummary.toPrettyJSON())
+	report.writeSection("Access log", systemSummary.AccessLog.toPrettyJSON())
 }
 
-// AllStats collects everything to JSON
-func AllStats() string {
-	return asJSON(allStats())
+//AllStats collects everything to JSON
+func (stats *Stats) AllStats() string {
+	return asJSON(allStats(stats))
 }
 
-func allStats() *stats {
-	allStats := new(stats)
-	allStats.CPU = cpuStat()
-	allStats.Memory = memoryStat()
-	allStats.Disk = diskStat()
-	allStats.Host = hostStat()
-	allStats.AccessLogSummary = accessLogSummary()
-	return allStats
+func allStats(stats *Stats) *Stats {
+	stats.CPU = cpuStat(stats)
+	stats.Memory = memoryStat(stats)
+	stats.Disk = diskStat(stats)
+	stats.Host = hostStat(stats)
+	stats.AccessLog = accessLogSummary(stats)
+	return stats
 }
 
 // CPUStat collects and returns cpu status as JSON
-func CPUStat() string {
-	return cpuStat().toJSON()
+func (stats *Stats) CPUStat() string {
+	return cpuStat(stats).toJSON()
 }
 
-func cpuStat() *cpu {
+func cpuStat(stats *Stats) *cpu {
 	cpuDetails := newCPU()
 	cpuDetails.collect()
+	stats.CPU = cpuDetails
 	return cpuDetails
 }
 
 // MemoryStat collects and returns memory status as JSON
-func MemoryStat() string {
-	return memoryStat().toJSON()
+func (stats *Stats) MemoryStat() string {
+	return memoryStat(stats).toJSON()
 }
 
-func memoryStat() *memory {
+func memoryStat(stats *Stats) *memory {
 	memDetails := newMemory()
 	memDetails.collect()
+	stats.Memory = memDetails
 	return memDetails
 }
 
 // DiskStat collects and returns disk status as JSON
-func DiskStat() string {
-	return diskStat().toJSON()
+func (stats *Stats) DiskStat() string {
+	return diskStat(stats).toJSON()
 }
 
-func diskStat() *disk {
+func diskStat(stats *Stats) *disk {
 	diskDetails := newDisk()
 	diskDetails.collect()
+	stats.Disk = diskDetails
 	return diskDetails
 }
 
 // HostStat collects and returns host details as JSON
-func HostStat() string {
-	return hostStat().toJSON()
+func (stats *Stats) HostStat() string {
+	return hostStat(stats).toJSON()
 }
 
-func hostStat() *host {
+func hostStat(stats *Stats) *host {
 	hostDetails := newHost()
 	hostDetails.collect()
+	stats.Host = hostDetails
 	return hostDetails
 }
 
 // AccessLogSummary summarizes the access log as JSON
-func AccessLogSummary() string {
-	return accessLogSummary().toJSON()
+func (stats *Stats) AccessLogSummary() string {
+	return accessLogSummary(stats).toJSON()
 }
 
-func accessLogSummary() *accessLog {
+func accessLogSummary(stats *Stats) *accessLog {
 	accessLogParser := newAccessLogParser()
-	accessLogParser.parse(100, "asset/Access-log-250917.txt", false)
+	accessConfig := stats.config.Get("access").(*toml.Tree)
+	accessLogParser.parse(int(accessConfig.Get("line_count").(int64)), accessConfig.Get("file_name").(string), accessConfig.Get("show_log_entries").(bool))
+	stats.AccessLog = accessLogParser
 	return accessLogParser
 }
 
@@ -110,4 +127,10 @@ func dealWithError(taskName string, err error) {
 	if err != nil {
 		log.Fatalf("%sTask failed: %v", taskName, err.Error())
 	}
+}
+
+func readConfigurations() *toml.Tree {
+	absPath, _ := filepath.Abs("config/settings.toml")
+	config, _ := toml.LoadFile(absPath)
+	return config
 }

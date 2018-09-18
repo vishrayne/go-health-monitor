@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/contrib/secure"
 	"github.com/gin-gonic/gin"
 	monit "github.com/vishrayne/go-monit"
 )
@@ -13,7 +15,18 @@ func main() {
 
 	// gin.SetMode(gin.ReleaseMode)
 	engine := gin.Default()
+
 	engine.Use(monitMiddleware())
+	engine.Use(secure.Secure(secure.Options{
+		AllowedHosts:          []string{"localhost:8080", "google.com"},
+		STSSeconds:            315360000,
+		STSIncludeSubdomains:  true,
+		FrameDeny:             true,
+		ContentTypeNosniff:    true,
+		BrowserXssFilter:      true,
+		ContentSecurityPolicy: "default-src 'self'",
+	}))
+	engine.Use(cors.Default())
 
 	engine.GET("/", rootHandler)
 	engine.GET("/ping", pingHandler)
